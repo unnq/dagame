@@ -107,10 +107,22 @@
 
           <label className="pill">
             Payout ×
-            <input type="number" min="1.1" max="3" step="0.1"
-              value={payout}
-              onChange={e=>setPayout(Math.min(3, Math.max(1.1, Number(e.target.value||2))))}
-              style={{width:80, marginLeft:6, background:"#0a0e13", color:"var(--text)", border:"1px solid var(--line)", borderRadius:"8px", padding:"4px 6px"}}/>
+            <input
+              type="number"
+              value={payout.toFixed(2)}
+              readOnly
+              style={{
+                width: 80,
+                marginLeft: 6,
+                background: "#0a0e13",
+                color: "var(--text)",
+                border: "1px solid var(--line)",
+                borderRadius: "8px",
+                padding: "4px 6px",
+                opacity: 0.6,
+                cursor: "not-allowed"
+              }}
+            />
           </label>
 
           <span className="pill muted">EV/flip: {singleEV.toFixed(1)}%</span>
