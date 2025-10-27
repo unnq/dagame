@@ -97,7 +97,7 @@
     return (
       <div>
         <h2>Slot Rush</h2>
-        <p className="muted">Payouts mirror Coin Flip+ ladder: 2×, 5×, 15×, 37.5× with matching probabilities.</p>
+        <p className="muted">Now with better payouts.</p>
 
         <div className="row" style={{marginTop:8}}>
           <label className="pill">
