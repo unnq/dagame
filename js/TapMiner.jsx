@@ -37,15 +37,31 @@
       localStorage.setItem("tap_next_ready", String(nra));
     };
 
+    // --- DEV TOOLS ---
+    const resetBalance = () => icr.set(0);
+    const clearCooldown = () => {
+      const nra = Date.now();
+      setNextReadyAt(nra);
+      localStorage.setItem("tap_next_ready", String(nra));
+    };
+
     return (
-      <div className="panel">
+      <div>
         <h2>Tap Miner</h2>
         <p className="muted">Press the button (60s cooldown). Earn iCR based on rarity.</p>
+
         <div className="row" style={{marginTop:8}}>
           <button className="btn primary" disabled={!ready} onClick={onTap}>
             {ready ? "Tap to Claim" : `Cooldown: ${secsLeft}s`}
           </button>
           {lastHit && <RarityPill rar={lastHit.rar}>{lastHit.rar.toUpperCase()} • +{lastHit.amount} iCR</RarityPill>}
+        </div>
+
+        <div className="sep"></div>
+
+        <div className="row">
+          <button className="btn" onClick={resetBalance}>Reset Balance (dev)</button>
+          <button className="btn" onClick={clearCooldown}>Clear Cooldown (dev)</button>
         </div>
       </div>
     );
