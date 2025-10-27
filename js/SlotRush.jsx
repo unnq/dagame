@@ -5,7 +5,7 @@
   // Minimal symbol set matching the ladder payouts
   const SYMBOLS = {
     "2":    { label:"⬣", faceClass:"face-blue",   rar:"blue"   },
-    "5":    { label:"✦", faceClass:"face-purple", rar:"purple" },
+    "8":    { label:"✦", faceClass:"face-purple", rar:"purple" },
     "15":   { label:"✸", faceClass:"face-gold",   rar:"gold"   },
     "75": { label:"✪", faceClass:"face-gold",   rar:"gold"   },
     "MISS": { label:"•",  faceClass:"face-gray",   rar:"gray"   }
@@ -25,8 +25,8 @@
   const PROFILES = {
     ladder: [
       [2,      0.15125  ],
-      [5,      0.06 ],
-      [15,     0.03 ],
+      [8,      0.075 ],
+      [25,     0.04 ],
       [75,   0.015 ],
       // implicit MISS prob = 1 - sum = 0.45
     ]
