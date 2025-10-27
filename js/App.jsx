@@ -3,9 +3,9 @@
   const CurrencyProvider = window.CurrencyProvider;
 
   const APPS = [
-    { id: "tap",   name: "Tap Miner",    comp: () => <window.TapMiner /> },
-    { id: "slots", name: "Slot Rush",    comp: () => <window.SlotRush /> },
-    { id: "flip",  name: "Coin Flip+",   comp: () => <window.CoinFlipPlus /> },
+    { id: "tap",   name: "Tap Miner",  comp: () => <window.TapMiner /> },
+    { id: "slots", name: "Slot Rush",  comp: () => <window.SlotRush /> },
+    { id: "flip",  name: "Coin Flip+", comp: () => <window.CoinFlipPlus /> },
   ];
 
   function Header() {
@@ -17,8 +17,8 @@
       </div>
     );
   }
-  
-// NEW: mobile-first tabs bar
+
+  // Mobile tabs (always rendered; CSS decides visibility)
   function MobileTabs({ current, onSelect }) {
     return (
       <nav className="tabs-mobile" role="tablist" aria-label="Games">
@@ -36,7 +36,7 @@
       </nav>
     );
   }
-  
+
   function Sidebar({ current, onSelect }) {
     return (
       <aside className="sidebar">
@@ -58,6 +58,7 @@
     return (
       <div className="app">
         <Header />
+        <MobileTabs current={current} onSelect={setCurrent} />
         <div className="body">
           <Sidebar current={current} onSelect={setCurrent} />
           <main className="main">
