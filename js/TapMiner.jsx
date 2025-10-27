@@ -5,10 +5,10 @@
 
   const LOOT_TABLE_TAP = [
     { rar: "gray",   p: 0.70, amount: 5 },
-    { rar: "green",  p: 0.22, amount: 15 },
-    { rar: "blue",   p: 0.06, amount: 40 },
-    { rar: "purple", p: 0.017, amount: 100 },
-    { rar: "gold",   p: 0.003, amount: 1000 },
+    { rar: "green",  p: 0.22, amount: 25 },
+    { rar: "blue",   p: 0.06, amount: 75 },
+    { rar: "purple", p: 0.017, amount: 250 },
+    { rar: "gold",   p: 0.002, amount: 10000 },
   ];
   const COOLDOWN_MS = 60_000;
 
