@@ -24,10 +24,10 @@
   // For the slot, we expose the four paying outcomes explicitly; MISS is the remainder.
   const PROFILES = {
     ladder: [
-      [2,      0.275   ],
-      [5,      0.15125 ],
-      [15,     0.07425 ],
-      [37.5,   0.0495  ],
+      [2,      0.15125  ],
+      [5,      0.06 ],
+      [15,     0.03 ],
+      [37.5,   0.015 ],
       // implicit MISS prob = 1 - sum = 0.45
     ]
   };
