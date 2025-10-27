@@ -60,3 +60,20 @@ body{margin:0;background:var(--bg);color:var(--text);
 .face-blue{color:var(--rar-blue)} .face-purple{color:var(--rar-purple)}
 .face-gold{color:var(--rar-gold)}
 .payline{height:2px;background:rgba(152,228,255,.25);margin:-6px 0 10px}
+
+/* pills and buttons already exist in your file; below are small extras */
+.toggle { display:inline-flex; gap:8px; align-items:center; }
+.toggle input { accent-color: var(--accent); }
+.choice { display:flex; gap:8px; }
+.choice button { min-width:90px; }
+.kv { display:flex; gap:8px; align-items:center; }
+.kv input[type="number"]{
+  width:110px; padding:6px; border-radius:8px;
+  background:#0a0e13; color:var(--text); border:1px solid var(--line);
+}
+.select{
+  padding:6px; border-radius:8px;
+  background:#0a0e13; color:var(--text); border:1px solid var(--line);
+}
+.big { font-size:18px; }
+
