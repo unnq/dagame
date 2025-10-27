@@ -86,11 +86,24 @@
 
           <label className="pill">
             Win %
-            <input type="number" min="30" max="70" step="1"
-              value={Math.round(winProb*100)}
-              onChange={e=>setWinProb(Math.min(0.7, Math.max(0.3, Number(e.target.value)/100)))}
-              style={{width:80, marginLeft:6, background:"#0a0e13", color:"var(--text)", border:"1px solid var(--line)", borderRadius:"8px", padding:"4px 6px"}}/>
+            <input
+              type="number"
+              value={Math.round(winProb * 100)}
+              readOnly
+              style={{
+                width: 80,
+                marginLeft: 6,
+                background: "#0a0e13",
+                color: "var(--text)",
+                border: "1px solid var(--line)",
+                borderRadius: "8px",
+                padding: "4px 6px",
+                opacity: 0.6,
+                cursor: "not-allowed"
+              }}
+            />
           </label>
+
 
           <label className="pill">
             Payout ×
