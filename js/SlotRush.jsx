@@ -7,7 +7,7 @@
     "2":    { label:"⬣", faceClass:"face-blue",   rar:"blue"   },
     "5":    { label:"✦", faceClass:"face-purple", rar:"purple" },
     "15":   { label:"✸", faceClass:"face-gold",   rar:"gold"   },
-    "37.5": { label:"✪", faceClass:"face-gold",   rar:"gold"   },
+    "75": { label:"✪", faceClass:"face-gold",   rar:"gold"   },
     "MISS": { label:"•",  faceClass:"face-gray",   rar:"gray"   }
   };
 
@@ -27,7 +27,7 @@
       [2,      0.15125  ],
       [5,      0.06 ],
       [15,     0.03 ],
-      [37.5,   0.015 ],
+      [75,   0.015 ],
       // implicit MISS prob = 1 - sum = 0.45
     ]
   };
