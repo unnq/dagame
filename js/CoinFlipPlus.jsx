@@ -4,7 +4,7 @@
 
   // Per-step multipliers applied to the CURRENT pot (not total vs bet)
   // Example with bet=20: step1 ×2 => 40; step2 ×3.5 => 140; step3 ×2 => 280, etc.
-  const STEP_FACTORS = [2.0, 3.5, 2.0, 1.5, 1.333]; // tweak as you like
+  const STEP_FACTORS = [2.0, 2.5, 3.0, 5.0]; // tweak as you like
 
   const BASE_WIN = 0.55;   // first flip win chance = 55%
   const STEP_DROP = 0.05;  // -5% absolute per successful step
