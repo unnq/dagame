@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>iCR Arcade (Prototype)</title>
   <link rel="stylesheet" href="css/styles.css" />
-  <!-- React (no build) -->
+  <!-- React via CDN -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -13,7 +13,14 @@
 <body>
   <div id="root"></div>
 
-  <!-- App -->
-  <script type="text/babel" src="js/app.jsx"></script>
+  <!-- App scripts (order matters) -->
+  <script type="text/babel" src="js/currencyContext.jsx"></script>
+  <script type="text/babel" src="js/utils.jsx"></script>
+
+  <script type="text/babel" src="js/TapMiner.jsx"></script>
+  <script type="text/babel" src="js/SlotRush.jsx"></script>
+  <script type="text/babel" src="js/CoinFlipPlus.jsx"></script>
+
+  <script type="text/babel" src="js/App.jsx"></script>
 </body>
 </html>
