@@ -2,33 +2,25 @@
   const { useState } = React;
   const useIcr = window.useIcr;
 
-  // Minimal symbol set matching the ladder payouts
+  // Symbols MUST cover every multiplier used in PROFILES
   const SYMBOLS = {
-    "2":    { label:"⬣", faceClass:"face-blue",   rar:"blue"   },
-    "8":    { label:"✦", faceClass:"face-purple", rar:"purple" },
-    "15":   { label:"✸", faceClass:"face-gold",   rar:"gold"   },
-    "75": { label:"✪", faceClass:"face-gold",   rar:"gold"   },
-    "MISS": { label:"•",  faceClass:"face-gray",   rar:"gray"   }
+    "2":   { label:"⬣", faceClass:"face-blue",   rar:"blue"   },
+    "8":   { label:"✦", faceClass:"face-purple", rar:"purple" },
+    "15":  { label:"✸", faceClass:"face-gold",   rar:"gold"   },
+    "25":  { label:"✺", faceClass:"face-gold",   rar:"gold"   },
+    "75":  { label:"✪", faceClass:"face-gold",   rar:"gold"   },
+    "MISS":{ label:"•",  faceClass:"face-gray",   rar:"gray"   }
   };
 
-  // Profile that mirrors Coin Flip+ ladder outcomes with STEP_FACTORS [2, 2.5, 3, 2.5]
-  // and odds 55% → 50% → 45% → 40%.
-  //
-  // Result distribution if you "auto-cash" right before bust:
-  //  - 0x  : 0.45
-  //  - 2x  : 0.55 * 0.50^0 * 0.50 = 0.275
-  //  - 5x  : 0.55 * 0.50 * 0.45 = 0.15125
-  //  - 15x : 0.55 * 0.50 * 0.45 * 0.40 = 0.0495, but that's "win all three then lose" in the 4-step version.
-  //  - 37.5x (jackpot) : 0.55 * 0.50 * 0.45 * 0.40 = 0.0495 (≈ 4.95%)
-  //
-  // For the slot, we expose the four paying outcomes explicitly; MISS is the remainder.
+  // Your edited distribution
   const PROFILES = {
     ladder: [
-      [2,      0.15125  ],
-      [8,      0.075 ],
-      [25,     0.04 ],
-      [75,   0.015 ],
-      // implicit MISS prob = 1 - sum = 0.45
+      [2,   0.15125],
+      [8,   0.075],
+      [15,  0.04],
+      [25,  0.015],
+      [75,  0.015], // include 75 since you defined it in SYMBOLS
+      // MISS = 1 - sum above
     ]
   };
 
@@ -36,7 +28,7 @@
     const r = Math.random();
     let acc = 0;
     for (const [m,p] of profile){ acc += p; if (r <= acc) return m; }
-    return "MISS"; // remaining mass goes to miss
+    return "MISS";
   }
 
   function Reel({ face, spinKey }) {
@@ -56,10 +48,7 @@
 
   function SlotRush(){
     const icr = useIcr();
-
-    // fixed to ladder-mimic; no dropdown needed
-    const profileKey = "ladder";
-    const table = PROFILES[profileKey];
+    const table = PROFILES.ladder;
 
     const [bet, setBet] = useState(20);
     const [spinning, setSpinning] = useState(false);
@@ -79,25 +68,26 @@
       if (m !== "MISS") {
         const payout = Math.floor(bet * Number(m));
         icr.add(payout);
-        const face = SYMBOLS[String(m)];
+        const face = SYMBOLS[String(m)] || SYMBOLS["MISS"]; // guard
         setFaces([face, face, face]);
         setLast({ multiplier: Number(m), payout, miss:false });
       } else {
-        // show mismatched faces on a miss
-        const pool = [SYMBOLS["2"], SYMBOLS["5"], SYMBOLS["15"], SYMBOLS["MISS"]];
-        const rnd = () => pool[Math.floor(Math.random()*pool.length)];
+        // update pool to only include keys that exist
+        const poolKeys = ["2","8","15","25"]; // leave out the top jackpot if you want
+        const rnd = () => SYMBOLS[poolKeys[Math.floor(Math.random()*poolKeys.length)]] || SYMBOLS["MISS"];
         setFaces([rnd(), rnd(), rnd()]);
         setLast({ multiplier: 0, payout: 0, miss:true });
       }
       setSpinning(false);
     };
 
-    const missPct = (100 - table.reduce((a,[,p])=>a + p*100, 0)).toFixed(2);
+    const paidPct = table.reduce((a,[,p])=>a + p*100, 0);
+    const missPct = (100 - paidPct).toFixed(2);
 
     return (
       <div>
         <h2>Slot Rush</h2>
-        <p className="muted">Now with better payouts.</p>
+        <p className="muted">Now with updated payouts.</p>
 
         <div className="row" style={{marginTop:8}}>
           <label className="pill">
@@ -132,12 +122,15 @@
         <div className="sep"></div>
         <div className="muted">Odds</div>
         <div className="list">
-          {table.map(([m,p],i)=>(
-            <div key={i} className="card row">
-              <RarityPill rar={SYMBOLS[String(m)].rar}>{m}×</RarityPill>
-              <span className="muted" style={{marginLeft:"auto"}}>{(p*100).toFixed(2)}%</span>
-            </div>
-          ))}
+          {table.map(([m,p],i)=>{
+            const sym = SYMBOLS[String(m)] || SYMBOLS["MISS"]; // guard
+            return (
+              <div key={i} className="card row">
+                <RarityPill rar={sym.rar}>{m}×</RarityPill>
+                <span className="muted" style={{marginLeft:"auto"}}>{(p*100).toFixed(2)}%</span>
+              </div>
+            );
+          })}
           <div className="card row">
             <span className="pill r-gray">MISS</span>
             <span className="muted" style={{marginLeft:"auto"}}>{missPct}%</span>
