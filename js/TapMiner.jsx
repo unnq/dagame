@@ -4,11 +4,11 @@
   const weightedPick = window.weightedPick;
 
   const LOOT_TABLE_TAP = [
-    { rar: "gray",   p: 0.70, amount: 1 },
-    { rar: "green",  p: 0.22, amount: 3 },
-    { rar: "blue",   p: 0.06, amount: 8 },
-    { rar: "purple", p: 0.017, amount: 20 },
-    { rar: "gold",   p: 0.003, amount: 100 },
+    { rar: "gray",   p: 0.70, amount: 5 },
+    { rar: "green",  p: 0.22, amount: 15 },
+    { rar: "blue",   p: 0.06, amount: 40 },
+    { rar: "purple", p: 0.017, amount: 100 },
+    { rar: "gold",   p: 0.003, amount: 1000 },
   ];
   const COOLDOWN_MS = 60_000;
 
