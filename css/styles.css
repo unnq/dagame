@@ -240,7 +240,7 @@ select:focus-visible{
   .nav button{
     flex:0 0 auto;
     text-align:center;
-    min-width: 10vw;
+    min-width: 120px;
     max-width: 25vw;
     white-space:nowrap;
   }
