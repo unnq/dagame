@@ -263,3 +263,39 @@ select:focus-visible{
   .header{ gap:8px; }
   .kpi{ padding:4px 6px; }
 }
+
+
+/* Mobile tabs bar (hidden on desktop) */
+.tabs-mobile{
+  display:none;
+}
+
+/* show on small screens; sticky under header */
+@media (max-width: 720px){
+  .tabs-mobile{
+    position:sticky; top:56px; z-index:9;
+    display:flex; gap:8px; align-items:center;
+    padding:10px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#0f141a,#0b0e12);
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin;
+  }
+  .tabs-mobile .tab{
+    flex:0 0 auto;
+    min-width:120px; min-height:48px;
+    padding:10px 12px;
+    background:transparent; color:var(--text);
+    border:1px solid var(--line); border-radius:8px;
+  }
+  .tabs-mobile .tab.active{
+    border-color:var(--accent); color:var(--accent);
+  }
+
+  /* keep the rest of the layout stacked on mobile */
+  .body{
+    grid-template-columns:1fr;
+    grid-template-rows:auto 1fr;
+  }
+  /* hide the desktop sidebar entirely on mobile */
+  .sidebar{ display:none; }
+}
