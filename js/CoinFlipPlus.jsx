@@ -2,22 +2,17 @@
   const { useState } = React;
   const useIcr = window.useIcr;
 
-  // Ladder schedule: total multipliers vs original bet
-  const LADDER_TOTALS = [2.0, 3.5, 5.0, 7.5, 10.0]; // you can tweak or extend
-  const BASE_WIN = 0.55; // 55% first flip
-  const STEP_DROP = 0.05; // -5% absolute per step
-  const MIN_WIN = 0.05; // floor so it never goes below 5% if extended
+  // Per-step multipliers applied to the CURRENT pot (not total vs bet)
+  // Example with bet=20: step1 ×2 => 40; step2 ×3.5 => 140; step3 ×2 => 280, etc.
+  const STEP_FACTORS = [2.0, 3.5, 2.0, 1.5, 1.333]; // tweak as you like
 
-  // Helper: win probability for the NEXT flip given current successful steps
+  const BASE_WIN = 0.55;   // first flip win chance = 55%
+  const STEP_DROP = 0.05;  // -5% absolute per successful step
+  const MIN_WIN  = 0.05;   // floor if you extend many steps
+
+  // Win probability for the NEXT flip, given how many wins (steps) you already have
   function nextWinProb(currentStep) {
-    // currentStep = how many wins you've banked in the ladder (0 before first win)
-    const p = BASE_WIN - STEP_DROP * currentStep;
-    return Math.max(MIN_WIN, p);
-  }
-
-  // Helper: total multiplier for a given successful step index
-  function totalMultForStep(stepIndex) {
-    return LADDER_TOTALS[Math.min(stepIndex, LADDER_TOTALS.length - 1)];
+    return Math.max(MIN_WIN, BASE_WIN - STEP_DROP * currentStep);
   }
 
   function CoinFlipPlus(){
@@ -27,8 +22,7 @@
     const [side,    setSide   ] = useState("heads");
     const [spinning, setSpinning] = useState(false);
 
-    // Ladder state
-    // step = number of successful flips so far in this ladder (0 before first win)
+    // Ladder state (step = number of successful flips so far)
     const [ladderActive, setLadderActive] = useState(false);
     const [pot, setPot]   = useState(0);  // current pot (not yet banked)
     const [step, setStep] = useState(0);  // successful steps so far
@@ -36,26 +30,27 @@
 
     const canStart = !spinning && !ladderActive && bet>0 && icr.get() >= bet;
     const canCash  = ladderActive && !spinning;
-    const canFlip  = ladderActive && !spinning && step < LADDER_TOTALS.length; // disable beyond last defined step
+    const canFlip  = ladderActive && !spinning && step < STEP_FACTORS.length;
 
     const rollWin = (p) => Math.random() < p;
 
-    // First flip in a new ladder
+    // Start a new ladder
     const startLadder = async () => {
       if (!canStart) return;
       setSpinning(true);
       icr.spend(bet);
-      // Odds & target for this first flip
-      const pWin = nextWinProb(0);             // 55%
-      const tgt  = totalMultForStep(0);        // 2.00× total
+
+      const pWin = nextWinProb(0);           // 55%
+      const factor = STEP_FACTORS[0];        // e.g. ×2.0
 
       await new Promise(r=>setTimeout(r, 400));
       if (rollWin(pWin)) {
-        const newPot = Math.floor(bet * tgt);
+        const newPot = Math.floor(bet * factor); // apply to initial bet
         setPot(newPot);
-        setStep(1);               // one successful step now
+        setStep(1);
         setLadderActive(true);
-        setLastMsg(`WIN (${Math.round(pWin*100)}% → total ×${tgt.toFixed(2)}) • pot ${newPot} iCR`);
+        const totalMult = (newPot / bet).toFixed(2);
+        setLastMsg(`WIN (${Math.round(pWin*100)}% • ×${factor.toFixed(2)} on pot) → total ×${totalMult} • pot ${newPot} iCR`);
       } else {
         setPot(0); setStep(0); setLadderActive(false);
         setLastMsg(`LOSS −${bet} iCR`);
@@ -63,21 +58,21 @@
       setSpinning(false);
     };
 
-    // Flip again within ladder
+    // Continue the ladder
     const flipAgain = async () => {
       if (!canFlip) return;
       setSpinning(true);
 
-      // Odds & target for the NEXT successful step we’re attempting
-      const pWin = nextWinProb(step);                 // drops 5% per existing step
-      const tgt  = totalMultForStep(step);            // total multiplier if we win this step
+      const pWin = nextWinProb(step);             // drops 5% per existing success
+      const factor = STEP_FACTORS[step];          // next step factor (applied to CURRENT pot)
 
       await new Promise(r=>setTimeout(r, 400));
       if (rollWin(pWin)) {
-        const newPot = Math.floor(bet * tgt);         // total vs original bet
+        const newPot = Math.floor(pot * factor);
+        const totalMult = (newPot / bet).toFixed(2);
         setPot(newPot);
         setStep(s => s + 1);
-        setLastMsg(`WIN (${Math.round(pWin*100)}% → total ×${tgt.toFixed(2)}) • pot ${newPot} iCR`);
+        setLastMsg(`WIN (${Math.round(pWin*100)}% • ×${factor.toFixed(2)} on pot) → total ×${totalMult} • pot ${newPot} iCR`);
       } else {
         setLastMsg(`BUST at step ${step+1} — pot lost`);
         setPot(0); setStep(0); setLadderActive(false);
@@ -92,18 +87,19 @@
       setPot(0); setStep(0); setLadderActive(false);
     };
 
-    // Info for UI: current and next targets
-    const thisFlipProb = nextWinProb(0);                    // 55% (for the very first flip)
-    const thisFlipMult = totalMultForStep(0);               // 2.00×
-    const nextProb     = ladderActive ? nextWinProb(step) : nextWinProb(0);
-    const nextMult     = ladderActive ? totalMultForStep(step) : totalMultForStep(0);
+    // UI helpers
+    const nextFactor = ladderActive ? (STEP_FACTORS[step] ?? null) : STEP_FACTORS[0];
+    const nextProb   = ladderActive ? nextWinProb(step) : nextWinProb(0);
+    const cumMult    = ladderActive ? (pot / bet) : 1;
+    const totalIfWin = nextFactor ? (ladderActive ? (pot * nextFactor) : (bet * nextFactor)) : null;
+    const totalIfWinMult = totalIfWin ? (totalIfWin / bet).toFixed(2) : null;
 
     return (
       <div className="panel">
         <h2>Coin Flip+</h2>
         <p className="muted">
-          Each successful flip increases your <b>total multiplier</b> but reduces win chance by <b>5%</b>.
-          Example: 55% → <b>2.00×</b>, then 50% → <b>3.50×</b>, then 45% → <b>5.00×</b>, etc.
+          Each successful flip multiplies your <b>current pot</b> by a bigger factor but reduces win chance by <b>5%</b>.
+          Example: 55% → ×2, then 50% → ×3.5 (so 20 → 40 → <b>140</b>), then 45% → ×2, etc.
         </p>
 
         <div className="row" style={{marginTop:8}}>
@@ -121,10 +117,15 @@
             <button className={`btn ${side==='tails'?'primary':''}`} onClick={()=>setSide('tails')}>Tails</button>
           </div>
 
-          {/* Read-only info pills instead of editable odds/payout */}
-          <span className="pill">This flip: {Math.round(thisFlipProb*100)}% → ×{thisFlipMult.toFixed(2)} total</span>
-          {ladderActive && (
-            <span className="pill">Next flip: {Math.round(nextProb*100)}% → ×{nextMult.toFixed(2)} total</span>
+          {/* Read-only info pills */}
+          <span className="pill">
+            Current total: ×{cumMult.toFixed(2)}
+          </span>
+          {nextFactor && (
+            <span className="pill">
+              Next flip: {Math.round(nextProb*100)}% • ×{nextFactor.toFixed(2)} on pot
+              {totalIfWinMult && <> → total ×{totalIfWinMult}</>}
+            </span>
           )}
         </div>
 
@@ -143,7 +144,7 @@
             <span className="pill">Step: {step}</span>
             <button className="btn" onClick={cashOut} disabled={!canCash}>Cash Out</button>
             <button className="btn primary" onClick={flipAgain} disabled={!canFlip}>
-              {spinning ? "Flipping…" : `Flip Again (${Math.round(nextProb*100)}% → ×${nextMult.toFixed(2)})`}
+              {spinning ? "Flipping…" : `Flip Again (${Math.round(nextProb*100)}% • ×${nextFactor?.toFixed(2)})`}
             </button>
           </div>
         )}
