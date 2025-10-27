@@ -265,4 +265,49 @@ function SlotRush(){
             <RarityPill rar={SYMBOLS[String(m)].rar}>
               {m}×
             </RarityPill>
-            <span className="muted" style={{marginLeft:"auto"}}>{(p
+            <span className="muted" style={{marginLeft:"auto"}}>{(p*100).toFixed(2)}%</span>
+          </div>
+        ))}
+        <div className="card row">
+          <span className="pill r-gray">MISS</span>
+          <span className="muted" style={{marginLeft:"auto"}}>
+            {( (1 - profileTable.reduce((a,[,p])=>a+p,0)) * 100 ).toFixed(2)}%
+          </span>
+        </div>
+      </div>
+
+      <div className="sep"></div>
+      <div className="row">
+        <button className="btn" onClick={()=>{ /* dev credit */ useIcr().add(100); }}>
+          Add 100 iCR (dev)
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* =========================
+   App mount
+   ========================= */
+function App(){
+  const [current, setCurrent] = useState("tap"); // start on Tap Miner
+  return (
+    <div className="app">
+      <Header />
+      <div className="body">
+        <Sidebar current={current} onSelect={setCurrent} />
+        <main className="main">
+          {current === "tap" && <TapMiner />}
+          {current === "slots" && <SlotRush />}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <CurrencyProvider>
+    <App />
+  </CurrencyProvider>
+);
