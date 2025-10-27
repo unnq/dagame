@@ -38,6 +38,27 @@ function Header() {
     </div>
   );
 }
+
+// NEW: mobile-first tabs bar
+  function MobileTabs({ current, onSelect }) {
+    return (
+      <nav className="tabs-mobile" role="tablist" aria-label="Games">
+        {APPS.map(a => (
+          <button
+            key={a.id}
+            role="tab"
+            aria-selected={current === a.id}
+            className={`tab ${current === a.id ? "active" : ""}`}
+            onClick={() => onSelect(a.id)}
+          >
+            {a.name}
+          </button>
+        ))}
+      </nav>
+    );
+  }
+
+
 function Sidebar({ current, onSelect }) {
   return (
     <aside className="sidebar">
