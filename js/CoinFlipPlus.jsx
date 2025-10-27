@@ -99,7 +99,6 @@
         <h2>Coin Flip+</h2>
         <p className="muted">
           Each successful flip multiplies your <b>current pot</b> by a bigger factor but reduces win chance by <b>5%</b>.
-          Example: 55% → ×2, then 50% → ×3.5 (so 20 → 40 → <b>140</b>), then 45% → ×2, etc.
         </p>
 
         <div className="row" style={{marginTop:8}}>
